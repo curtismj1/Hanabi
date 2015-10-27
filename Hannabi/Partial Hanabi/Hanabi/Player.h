@@ -52,10 +52,13 @@ private:
 	void handleDiscardEvent(DiscardEvent*);
 	int fuses;
 	void outputKB();
+	bool restockHints;
+	Event * bestHint();
 };
 
 Player::Player()
 {
+	restockHints = false;
 	hintsLeft = 8;
 	for(int i = 0; i<5; i++)
 	{
@@ -156,6 +159,9 @@ void Player::handlePlayEvent(PlayEvent * playEvent){
 				otherPlayerKnowledgeBase[knowledgeBase.size() - 1] = temp;
 }
 void Player::handleDiscardEvent(DiscardEvent * discardEvent){
+				if(hintsLeft < 2){
+					restockHints = true;
+				}
 				possibilities temp;
 				for(int b = discardEvent->position; b < otherPlayerKnowledgeBase.size() - 1; b ++){
 					otherPlayerKnowledgeBase[b] = otherPlayerKnowledgeBase[b+1];
@@ -263,27 +269,37 @@ void Player:: slideKB(int index){
 	knowledgeBase[knowledgeBase.size() - 1] = temp;
 }
 void Player::outputKB(){
-	for (int i = 0; i < knowledgeBase.size(); i++){
-		
-	}
+
 }
+
+//Event * Player::bestHint(){
+//	vector<int> mostElim;
+//	for (int a =0; a < 5; a++){
+//		mostElim.push_back(0);
+//	}
+//	int max = 0;
+//	for (int i = 0; i < knowledgeBase.size(); i++){
+//		if(otherPlayerKnowledgeBase[i].numbers.size() > 1){
+//			mostElim[otherHand[i].number]++;
+//		}
+//	}
+//
+//}
 Event* Player::ask()
 {
 
 	handleNumberPossible();
 	for(int a = 0; a < knowledgeBase.size(); a ++){
-		if(knowledgeBase[a].numbers.size() == 1 && numberPossible[knowledgeBase[a].numbers[0]] >= 6-fuses){
+		if(knowledgeBase[a].numbers.size() == 1 && numberPossible[knowledgeBase[a].numbers[0]] >= 5-fuses){
 			if(gameBoard[knowledgeBase[a].colors[0]] - knowledgeBase[a].numbers[0] == -1){
 				PlayEvent * myPlay = new PlayEvent(a);
 				slideKB(a);
-				cout << "this play" << endl;
 				return myPlay;
 			}
 		}
 		else if(knowledgeBase[a].colors.size() == 1 && knowledgeBase[a].numbers.size() == 1){
 			if(gameBoard[knowledgeBase[a].colors[0]] - knowledgeBase[a].numbers[0] == -1){
 				PlayEvent * myPlay = new PlayEvent(a);
-				cout << "that play" << endl;
 				slideKB(a);
 				return myPlay;
 			}
@@ -332,21 +348,15 @@ Event* Player::ask()
 	*/
 
 	for(int i = 0; i < knowledgeBase.size(); i++){
-		if(knowledgeBase[i].colors.size() == 1){
+		if(knowledgeBase[i].colors.size() == 1 && knowledgeBase[i].numbers.size() == 1){
 			if(gameBoard[knowledgeBase[i].colors[0]] - knowledgeBase[i].numbers[0] >= 0){
-				DiscardEvent * d = new DiscardEvent(i);
+				DiscardEvent * dis = new DiscardEvent(i);
 				slideKB(i);
-				return d;
-			}
-			else if (knowledgeBase[i].numbers.size() == 1){
-				if(gameBoard[knowledgeBase[i].colors[0]] - knowledgeBase[i].numbers[0] >= 0){
-					DiscardEvent * d = new DiscardEvent(i);
-					slideKB(i);
-					return d;
-				}
+				return dis;
 			}
 		}
 	}
+
 	DiscardEvent * dis = new DiscardEvent(0);
 	slideKB(0);
 	return dis;
