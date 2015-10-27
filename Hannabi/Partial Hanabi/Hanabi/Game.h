@@ -161,8 +161,6 @@ void Game::setup(Player& p1, Player& p2)
 		announce(e);
 	}
 	delete e;
-
-
 	return;
 }
 
@@ -170,6 +168,10 @@ int Game::gameLoop()
 {
 	while (true)
 	{
+		if(chatty){
+			cout << "Player: " << currentPlayer + 1 << " will now take their turn" << endl;
+		}
+		
 		Event *e = players[currentPlayer].p.ask();
 		// Discard
 		if (e->getAction() == DISCARD)
