@@ -225,7 +225,7 @@ void Player::updateOtherPlayerKnowledgeBaseNumberHint(NumberHintEvent* numberHin
 	vector<int> number;
 	number.push_back(numberHint->number);
 
-	for(int a = 0; a < otherPlayerKnowledgeBase.size(); a++) {
+	for(int a = 0; a < otherPlayerKnowledgeBase.size() && a < otherHand.size(); a++) {
 		if(otherHand[a].number == numberHint->number){
 			otherPlayerKnowledgeBase[a].numbers = number;
 		}
@@ -250,7 +250,7 @@ void Player::handleNumberPossible(){
 	for(int a =0; a < numberPossible.size(); a++){
 		numberPossible[a] = 0;
 	}
-	for(int a = 0; a < gameBoard.size(); a++){
+	for(int a = 0; a < gameBoard.size() && gameBoard[a] < 5; a++){
 		numberPossible[gameBoard[a] + 1]++;
 	}
 }
